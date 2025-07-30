@@ -33,3 +33,14 @@ data "aws_secretsmanager_secret" "grafana_service_account" {
 data "aws_secretsmanager_secret_version" "grafana_service_account_version" {
   secret_id = data.aws_secretsmanager_secret.grafana_service_account.id
 }
+
+# ✅ NEW: Data source to retrieve stored probe tokens (optional, for existing tokens)
+data "aws_secretsmanager_secret" "probe_tokens" {
+  count = var.use_existing_tokens ? 1 : 0
+  name  = "${var.secret_base_path}/probe-tokens"
+}
+
+data "aws_secretsmanager_secret_version" "probe_tokens_version" {
+  count     = var.use_existing_tokens ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.probe_tokens[0].id
+}
